@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SOMETHING_VERY_SECRET')
+SECRET_KEY = os.environ.get('SOMETHING_VERY_SECRET', 'secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-]
+    'rest_framework',
+    'src.profiles',
+    'djoser',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -74,17 +77,27 @@ WSGI_APPLICATION = 'pickdog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'pickdog',
+#         'USER': 'postgres',
+#         'PASSWORD': '123654',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pickdog',
-        'USER': 'postgres',
-        'PASSWORD': '123654',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': os.environ.get("POSTGRES_ENGINE", ""),
+        'NAME': os.environ.get("POSTGRES_DATABASE", os.path.join(BASE_DIR, "")),
+        'USER': os.environ.get("POSTGRES_USER", "user"),
+        'PASSWORD': os.environ.get("POSTGRES_PASSWORD", "password"),
+        'HOST': os.environ.get("POSTGRES_HOST", "localhost"),
+        'PORT': os.environ.get("POSTGRES_PORT", "5432"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -128,3 +141,13 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+#    'AUTH_HEADER_TYPES': ('JWT',),
+}
